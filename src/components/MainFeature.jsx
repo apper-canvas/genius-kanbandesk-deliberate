@@ -595,8 +595,7 @@ const MainFeature = () => {
     { id: '3', name: 'Waiting for Customer', order: 2 },
     { id: '4', name: 'Resolved', order: 3 },
   ];
-
-const MainFeature = () => {
+  
   // State for all board data
   const [columns, setColumns] = useState(() => {
     const savedData = localStorage.getItem('kanbandesk-data');
@@ -643,6 +642,8 @@ const MainFeature = () => {
     return (
       ticket.title.toLowerCase().includes(query) ||
       (ticket.description && ticket.description.toLowerCase().includes(query)) ||
+      (ticket.assignee && ticket.assignee.toLowerCase().includes(query)) ||
+      (ticket.customer && ticket.customer.toLowerCase().includes(query))
       (ticket.assignee && ticket.assignee.toLowerCase().includes(query)) ||
       (ticket.customer && ticket.customer.toLowerCase().includes(query)) ||
       (ticket.tags && ticket.tags.some(tag => tag.toLowerCase().includes(query)))
