@@ -20,26 +20,25 @@ import {
 } from '@dnd-kit/sortable';
 
 // Icons
-const PlusIcon = getIcon('plus');
-const EditIcon = getIcon('edit-3');
-const EditIcon = getIcon('Edit3');
-const TrashIcon = getIcon('Trash2');
-const AlertCircleIcon = getIcon('AlertCircle');
-const ChevronDownIcon = getIcon('ChevronDown');
-const CheckCircleIcon = getIcon('CheckCircle');
-const XIcon = getIcon('X');
-const SettingsIcon = getIcon('Settings');
-const UserIcon = getIcon('User');
-const CalendarIcon = getIcon('Calendar');
-const TagIcon = getIcon('Tag');
-const SearchIcon = getIcon('Search');
-const DownloadIcon = getIcon('Download');
-const UploadIcon = getIcon('Upload');
-const GripIcon = getIcon('GripVertical');
-const CheckIcon = getIcon('Check');
-const UsersIcon = getIcon('Users');
-const Square = getIcon('square');
-const CheckSquare = getIcon('check-square');
+const plusIcon = getIcon('plus');
+const editIcon = getIcon('Edit3');
+const trashIcon = getIcon('Trash2');
+const alertCircleIcon = getIcon('AlertCircle');
+const chevronDownIcon = getIcon('ChevronDown');
+const checkCircleIcon = getIcon('CheckCircle');
+const xIcon = getIcon('X');
+const settingsIcon = getIcon('Settings');
+const userIcon = getIcon('User');
+const calendarIcon = getIcon('Calendar');
+const tagIcon = getIcon('Tag');
+const searchIcon = getIcon('Search');
+const downloadIcon = getIcon('Download');
+const uploadIcon = getIcon('Upload');
+const gripIcon = getIcon('GripVertical');
+const checkIcon = getIcon('Check');
+const usersIcon = getIcon('Users');
+const square = getIcon('square');
+const checkSquare = getIcon('check-square');
 
 // Component for individual ticket
 const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelected = false, onSelect, selectable = false }) => {
@@ -78,7 +77,7 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
               onSelect(ticket.id);
             }}
             className="mr-2 text-surface-500 hover:text-primary p-1 rounded-md">
-            {isSelected ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5" />}
+            {isSelected ? <checkSquare className="h-5 w-5 text-primary" /> : <square className="h-5 w-5" />}
           </button>
         )}
         <div className="flex space-x-1">
@@ -89,7 +88,7 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
             }}
             className="text-surface-500 hover:text-primary p-1 rounded-md"
           >
-            <EditIcon className="h-4 w-4" />
+            <editIcon className="h-4 w-4" />
           </button>
           <button 
             onClick={(e) => {
@@ -98,7 +97,7 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
             }}
             className="text-surface-500 hover:text-red-500 p-1 rounded-md"
           >
-            <TrashIcon className="h-4 w-4" />
+            <trashIcon className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -113,20 +112,20 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
       
       <div className="mt-3 flex flex-wrap gap-2">
         <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${priorityStyles[ticket.priority]}`}>
-          <AlertCircleIcon className="h-3 w-3 mr-1" />
+          <alertCircleIcon className="h-3 w-3 mr-1" />
           {ticket.priority}
         </span>
         
         {ticket.assignee && (
           <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-md text-xs font-medium">
-            <UserIcon className="h-3 w-3 mr-1" />
+            <userIcon className="h-3 w-3 mr-1" />
             {ticket.assignee}
           </span>
         )}
         
         {ticket.dueDate && (
           <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded-md text-xs font-medium">
-            <CalendarIcon className="h-3 w-3 mr-1" />
+            <calendarIcon className="h-3 w-3 mr-1" />
             {format(new Date(ticket.dueDate), 'MMM d')}
           </span>
         )}
@@ -139,7 +138,7 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
               key={idx} 
               className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-100 text-surface-700 dark:bg-surface-700 dark:text-surface-300"
             >
-              <TagIcon className="h-3 w-3 mr-1" />
+              <tagIcon className="h-3 w-3 mr-1" />
               {tag}
             </span>
           ))}
@@ -233,7 +232,7 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
               onClick={handleColumnNameSave}
               className="text-white bg-primary hover:bg-primary-dark p-1 rounded-md"
             >
-              <CheckCircleIcon className="h-5 w-5" />
+              <checkCircleIcon className="h-5 w-5" />
             </button>
             <button 
               onClick={() => {
@@ -242,7 +241,7 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
               }}
               className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 rounded-md"
             >
-              <XIcon className="h-5 w-5" />
+              <xIcon className="h-5 w-5" />
             </button>
           </div>
         ) : (
@@ -260,13 +259,13 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
                 onClick={() => setIsEditing(true)}
                 className="text-surface-500 hover:text-primary p-1 rounded-md"
               >
-                <EditIcon className="h-4 w-4" />
+                <editIcon className="h-4 w-4" />
               </button>
               <button 
                 onClick={() => onDeleteColumn(column.id)}
                 className="text-surface-500 hover:text-red-500 p-1 rounded-md"
               >
-                <TrashIcon className="h-4 w-4" />
+                <trashIcon className="h-4 w-4" />
               </button>
             </div>
           </>
@@ -278,7 +277,7 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
         onClick={() => onAddTicket(column.id)}
         className="mb-3 w-full py-2 px-3 bg-white dark:bg-surface-700 border border-dashed border-surface-300 dark:border-surface-600 rounded-lg text-surface-500 dark:text-surface-400 hover:text-primary dark:hover:text-primary-light hover:border-primary dark:hover:border-primary-light transition-colors duration-200 text-sm flex items-center justify-center"
       >
-        <PlusIcon className="h-4 w-4 mr-2" />
+        <plusIcon className="h-4 w-4 mr-2" />
         Add Ticket
       </button>
       
@@ -429,7 +428,7 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
                   onClick={onClose}
                   className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
-                  <XIcon className="h-5 w-5" />
+                  <xIcon className="h-5 w-5" />
                 </button>
               </div>
               
@@ -486,7 +485,7 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
                         <option value="Low">Low</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <ChevronDownIcon className="h-4 w-4 text-surface-500" />
+                        <chevronDownIcon className="h-4 w-4 text-surface-500" />
                       </div>
                     </div>
                   </div>
@@ -554,7 +553,7 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
                         onClick={handleTagAdd}
                         className="px-3 bg-primary text-white rounded-r-lg hover:bg-primary-dark transition-colors"
                       >
-                        <PlusIcon className="h-5 w-5" />
+                        <plusIcon className="h-5 w-5" />
                       </button>
                     </div>
                     
@@ -571,7 +570,7 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
                               onClick={() => handleTagRemove(tag)}
                               className="ml-1 text-surface-500 hover:text-red-500"
                             >
-                              <XIcon className="h-3 w-3" />
+                              <xIcon className="h-3 w-3" />
                             </button>
                           </span>
                         ))}
@@ -648,7 +647,7 @@ const BulkStatusChangeModal = ({ isOpen, onClose, onSave, columns, selectedTicke
                   onClick={onClose}
                   className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
-                  <XIcon className="h-5 w-5" />
+                  <xIcon className="h-5 w-5" />
                 </button>
               </div>
               
@@ -673,7 +672,7 @@ const BulkStatusChangeModal = ({ isOpen, onClose, onSave, columns, selectedTicke
                         ))}
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <ChevronDownIcon className="h-4 w-4 text-surface-500" />
+                        <chevronDownIcon className="h-4 w-4 text-surface-500" />
                       </div>
                     </div>
                   </div>
@@ -713,7 +712,7 @@ const BulkActionToolbar = ({ selectedTickets, onClearSelection, onBulkStatusChan
       className="bg-white dark:bg-surface-800 rounded-lg shadow-md p-3 mb-4 flex flex-wrap items-center gap-2"
     >
       <span className="font-medium text-surface-700 dark:text-surface-300 flex items-center">
-        <CheckSquare className="h-5 w-5 mr-2 text-primary" />
+        <checkSquare className="h-5 w-5 mr-2 text-primary" />
         {selectedTickets.length} tickets selected
       </span>
       
@@ -723,23 +722,23 @@ const BulkActionToolbar = ({ selectedTickets, onClearSelection, onBulkStatusChan
         onClick={onBulkStatusChange}
         className="btn-secondary flex items-center text-sm"
       >
-        <LayersIcon className="h-4 w-4 mr-1" /> Change Status
+        <layersIcon className="h-4 w-4 mr-1" /> Change Status
       </button>
       
       <button onClick={onBulkAssign} className="btn-secondary flex items-center text-sm">
-        <UsersIcon className="h-4 w-4 mr-1" /> Reassign
+        <usersIcon className="h-4 w-4 mr-1" /> Reassign
       </button>
       
       <button onClick={onBulkAddTag} className="btn-secondary flex items-center text-sm">
-        <TagIcon className="h-4 w-4 mr-1" /> Add Tag
+        <tagIcon className="h-4 w-4 mr-1" /> Add Tag
       </button>
       
       <button onClick={onBulkDelete} className="btn-secondary flex items-center text-sm bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/50 dark:text-red-300">
-        <TrashIcon className="h-4 w-4 mr-1" /> Delete
+        <trashIcon className="h-4 w-4 mr-1" /> Delete
       </button>
       
       <button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
-        <XIcon className="h-4 w-4 mr-1" /> Clear
+        <xIcon className="h-4 w-4 mr-1" /> Clear
       </button>
     </motion.div>
   );
@@ -1159,7 +1158,7 @@ const MainFeature = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="input pl-10"
           />
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-surface-400" />
+          <searchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-surface-400" />
         </div>
         
         <div className="flex flex-wrap gap-2">
@@ -1170,7 +1169,7 @@ const MainFeature = () => {
               className="hidden"
               onChange={handleImportCSV}
             />
-            <UploadIcon className="h-5 w-5 mr-2" />
+            <uploadIcon className="h-5 w-5 mr-2" />
             Import CSV
           </label>
           
@@ -1178,7 +1177,7 @@ const MainFeature = () => {
             onClick={handleExportCSV}
             className="btn bg-surface-200 hover:bg-surface-300 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-800 dark:text-surface-200"
           >
-            <DownloadIcon className="h-5 w-5 mr-2" />
+            <downloadIcon className="h-5 w-5 mr-2" />
             Export CSV
           </button>
           
@@ -1186,7 +1185,7 @@ const MainFeature = () => {
             onClick={() => setShowAddColumn(true)}
             className="btn bg-primary hover:bg-primary-dark text-white"
           >
-            <PlusIcon className="h-5 w-5 mr-2" />
+            <plusIcon className="h-5 w-5 mr-2" />
             Add Column
           </button>
         </div>
