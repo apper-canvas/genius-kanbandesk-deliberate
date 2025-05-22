@@ -35,9 +35,14 @@ const SearchIcon = getIcon('search');
 const DownloadIcon = getIcon('download');
 const UploadIcon = getIcon('upload');
 const GripIcon = getIcon('grip');
+const CheckIcon = getIcon('check');
+const UsersIcon = getIcon('users');
+const LayersIcon = getIcon('layers');
+const Square = getIcon('square');
+const CheckSquare = getIcon('check-square');
 
 // Component for individual ticket
-const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false }) => {
+const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelected = false, onSelect, selectable = false }) => {
   // Priority badge styling
   const priorityStyles = {
     High: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
@@ -54,8 +59,8 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false }) => {
       className={`${
         isOverlay ? 'shadow-lg' : ''
       } bg-white dark:bg-surface-800 rounded-lg shadow-card border border-surface-200 dark:border-surface-700 p-3 mb-3 cursor-grab active:cursor-grabbing`}
-      style={{
-        borderLeft: `4px solid ${
+      style={{ 
+        borderLeft: `4px solid ${  
           ticket.priority === 'High' 
             ? '#ef4444' 
             : ticket.priority === 'Medium' 
@@ -66,6 +71,16 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false }) => {
     >
       <div className="flex justify-between items-start">
         <h3 className="font-medium text-surface-900 dark:text-white">{ticket.title}</h3>
+        {selectable && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(ticket.id);
+            }}
+            className="mr-2 text-surface-500 hover:text-primary p-1 rounded-md">
+            {isSelected ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5" />}
+          </button>
+        )}
         <div className="flex space-x-1">
           <button 
             onClick={(e) => {
@@ -135,21 +150,22 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false }) => {
 };
 
 // Sortable ticket component
-const SortableTicket = ({ ticket, onEdit, onDelete, id, listeners }) => {
+const SortableTicket = ({ ticket, onEdit, onDelete, id, listeners, isSelected, onSelect, selectable }) => {
   return (
     <div className="sortable-item" id={id} {...listeners}>
       <TicketCard 
         ticket={ticket} 
         onEdit={onEdit} 
         onDelete={onDelete} 
-        id={id} 
+        id={id}
+        isSelected={isSelected} onSelect={onSelect} selectable={selectable}
       />
     </div>
   );
 };
 
 // Component for board column
-const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, onDeleteColumn, onColumnEdit }) => {
+const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, onDeleteColumn, onColumnEdit, selectedTickets, onSelectTicket }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [columnName, setColumnName] = useState(column.name);
   
@@ -286,7 +302,10 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
                   ticket={ticket}
                   onEdit={onEditTicket}
                   onDelete={onDeleteTicket}
+                  isSelected={selectedTickets.includes(ticket.id)}
+                  onSelect={onSelectTicket}
                   listeners={{}}
+                  selectable={true}
                 />
               ))}
             </AnimatePresence>
@@ -585,6 +604,147 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
     </AnimatePresence>
   );
 };
+// Bulk Status Change Modal
+const BulkStatusChangeModal = ({ isOpen, onClose, onSave, columns, selectedTickets }) => {
+  const [selectedColumnId, setSelectedColumnId] = useState('');
+  
+  useEffect(() => {
+    if (isOpen && columns.length > 0) {
+      setSelectedColumnId(columns[0].id);
+    }
+  }, [isOpen, columns]);
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (selectedColumnId) {
+      onSave(selectedColumnId);
+      onClose();
+    }
+  };
+  
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4 text-center">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            />
+            
+            {/* Modal content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="relative w-full max-w-md bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
+            >
+              <div className="absolute top-4 right-4">
+                <button 
+                  onClick={onClose}
+                  className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <h2 className="text-lg font-semibold mb-4 text-surface-900 dark:text-white">
+                Move {selectedTickets.length} Tickets to Column
+              </h2>
+              
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                      Select Column
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedColumnId}
+                        onChange={(e) => setSelectedColumnId(e.target.value)}
+                        className="input appearance-none pr-10"
+                      >
+                        {columns.map(column => (
+                          <option key={column.id} value={column.id}>{column.name}</option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <ChevronDownIcon className="h-4 w-4 text-surface-500" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end space-x-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className="px-4 py-2 bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg hover:bg-surface-300 dark:hover:bg-surface-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                    >
+                      Move Tickets
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// Bulk Action Toolbar
+const BulkActionToolbar = ({ selectedTickets, onClearSelection, onBulkStatusChange, onBulkAssign, onBulkAddTag, onBulkDelete }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="bg-white dark:bg-surface-800 rounded-lg shadow-md p-3 mb-4 flex flex-wrap items-center gap-2"
+    >
+      <span className="font-medium text-surface-700 dark:text-surface-300 flex items-center">
+        <CheckSquare className="h-5 w-5 mr-2 text-primary" />
+        {selectedTickets.length} tickets selected
+      </span>
+      
+      <div className="flex-grow"></div>
+      
+      <button 
+        onClick={onBulkStatusChange}
+        className="btn-secondary flex items-center text-sm"
+      >
+        <LayersIcon className="h-4 w-4 mr-1" /> Change Status
+      </button>
+      
+      <button onClick={onBulkAssign} className="btn-secondary flex items-center text-sm">
+        <UsersIcon className="h-4 w-4 mr-1" /> Reassign
+      </button>
+      
+      <button onClick={onBulkAddTag} className="btn-secondary flex items-center text-sm">
+        <TagIcon className="h-4 w-4 mr-1" /> Add Tag
+      </button>
+      
+      <button onClick={onBulkDelete} className="btn-secondary flex items-center text-sm bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/50 dark:text-red-300">
+        <TrashIcon className="h-4 w-4 mr-1" /> Delete
+      </button>
+      
+      <button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
+        <XIcon className="h-4 w-4 mr-1" /> Clear
+      </button>
+    </motion.div>
+  );
+};
+
 
 // Main component
 const MainFeature = () => {
@@ -628,6 +788,12 @@ const MainFeature = () => {
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newColumnName, setNewColumnName] = useState('');
+  const [selectedTickets, setSelectedTickets] = useState([]);
+  const [showBulkStatusModal, setShowBulkStatusModal] = useState(false);
+  const [showBulkAssignModal, setShowBulkAssignModal] = useState(false);
+  const [bulkAssignee, setBulkAssignee] = useState('');
+  const [showBulkTagModal, setShowBulkTagModal] = useState(false);
+  const [bulkTagInput, setBulkTagInput] = useState('');
   const [showAddColumn, setShowAddColumn] = useState(false);
   
   // Save data to localStorage whenever tickets or columns change
@@ -642,8 +808,6 @@ const MainFeature = () => {
     return (
       ticket.title.toLowerCase().includes(query) ||
       (ticket.description && ticket.description.toLowerCase().includes(query)) ||
-      (ticket.assignee && ticket.assignee.toLowerCase().includes(query)) ||
-      (ticket.customer && ticket.customer.toLowerCase().includes(query))
       (ticket.assignee && ticket.assignee.toLowerCase().includes(query)) ||
       (ticket.customer && ticket.customer.toLowerCase().includes(query)) ||
       (ticket.tags && ticket.tags.some(tag => tag.toLowerCase().includes(query)))
@@ -735,6 +899,99 @@ const MainFeature = () => {
     );
     
     toast.success('Column updated successfully');
+  };
+
+  // Handle selecting a ticket
+  const handleSelectTicket = (ticketId) => {
+    setSelectedTickets(prev => {
+      if (prev.includes(ticketId)) {
+        return prev.filter(id => id !== ticketId);
+      } else {
+        return [...prev, ticketId];
+      }
+    });
+  };
+
+  // Clear all selections
+  const handleClearSelection = () => {
+    setSelectedTickets([]);
+  };
+
+  // Bulk status change
+  const handleBulkStatusChange = () => {
+    setShowBulkStatusModal(true);
+  };
+
+  const handleSaveBulkStatus = (columnId) => {
+    setTickets(prev => 
+      prev.map(ticket => 
+        selectedTickets.includes(ticket.id) 
+          ? { ...ticket, columnId } 
+          : ticket
+      )
+    );
+    toast.success(`${selectedTickets.length} tickets moved successfully`);
+  };
+
+  // Bulk assign
+  const handleBulkAssign = () => {
+    setShowBulkAssignModal(true);
+  };
+
+  const handleSaveBulkAssign = () => {
+    if (!bulkAssignee.trim()) {
+      toast.error('Assignee name cannot be empty');
+      return;
+    }
+    
+    setTickets(prev => 
+      prev.map(ticket => 
+        selectedTickets.includes(ticket.id) 
+          ? { ...ticket, assignee: bulkAssignee } 
+          : ticket
+      )
+    );
+    
+    toast.success(`${selectedTickets.length} tickets reassigned to ${bulkAssignee}`);
+    setShowBulkAssignModal(false);
+    setBulkAssignee('');
+  };
+
+  // Bulk add tag
+  const handleBulkAddTag = () => {
+    setShowBulkTagModal(true);
+  };
+
+  const handleSaveBulkTag = () => {
+    if (!bulkTagInput.trim()) {
+      toast.error('Tag cannot be empty');
+      return;
+    }
+    
+    setTickets(prev => 
+      prev.map(ticket => {
+        if (selectedTickets.includes(ticket.id)) {
+          const currentTags = ticket.tags || [];
+          if (!currentTags.includes(bulkTagInput.trim())) {
+            return { ...ticket, tags: [...currentTags, bulkTagInput.trim()] };
+          }
+        }
+        return ticket;
+      })
+    );
+    
+    toast.success(`Tag added to ${selectedTickets.length} tickets`);
+    setShowBulkTagModal(false);
+    setBulkTagInput('');
+  };
+
+  // Bulk delete
+  const handleBulkDelete = () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedTickets.length} tickets?`)) {
+      setTickets(prev => prev.filter(ticket => !selectedTickets.includes(ticket.id)));
+      setSelectedTickets([]);
+      toast.success(`${selectedTickets.length} tickets deleted successfully`);
+    }
   };
   
   // Export tickets to CSV
@@ -975,6 +1232,20 @@ const MainFeature = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Bulk actions toolbar */}
+      <AnimatePresence>
+        {selectedTickets.length > 0 && (
+          <BulkActionToolbar
+            selectedTickets={selectedTickets}
+            onClearSelection={handleClearSelection}
+            onBulkStatusChange={handleBulkStatusChange}
+            onBulkAssign={handleBulkAssign}
+            onBulkAddTag={handleBulkAddTag}
+            onBulkDelete={handleBulkDelete}
+          />
+        )}
+      </AnimatePresence>
       
       {/* Kanban board */}
       <div className="flex-grow overflow-x-auto custom-scrollbar">
@@ -989,6 +1260,8 @@ const MainFeature = () => {
               onDeleteTicket={handleDeleteTicket}
               onDeleteColumn={handleDeleteColumn}
               onColumnEdit={handleEditColumn}
+              selectedTickets={selectedTickets}
+              onSelectTicket={handleSelectTicket}
             />
           ))}
         </div>
@@ -1001,6 +1274,106 @@ const MainFeature = () => {
         onSave={handleSaveTicket}
         editingTicket={editingTicket}
         columnId={selectedColumnId}
+      />
+      
+      {/* Bulk status change modal */}
+      <BulkStatusChangeModal
+        isOpen={showBulkStatusModal}
+        onClose={() => setShowBulkStatusModal(false)}
+        onSave={handleSaveBulkStatus}
+        columns={columns}
+        selectedTickets={selectedTickets}
+      />
+
+      {/* Bulk assignee modal */}
+      <AnimatePresence>
+        {showBulkAssignModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-screen items-center justify-center p-4 text-center">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowBulkAssignModal(false)}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="relative w-full max-w-md bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
+              >
+                <h2 className="text-lg font-semibold mb-4 text-surface-900 dark:text-white">
+                  Reassign {selectedTickets.length} Tickets
+                </h2>
+                <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                  Assignee
+                </label>
+                <input
+                  type="text"
+                  value={bulkAssignee}
+                  onChange={(e) => setBulkAssignee(e.target.value)}
+                  className="input mb-4"
+                  placeholder="Enter assignee name"
+                />
+                <div className="flex justify-end space-x-3">
+                  <button onClick={() => setShowBulkAssignModal(false)} className="btn-secondary">
+                    Cancel
+                  </button>
+                  <button onClick={handleSaveBulkAssign} className="btn-primary">
+                    Assign
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+      
+      {/* Bulk tag modal */}
+      <AnimatePresence>
+        {showBulkTagModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-screen items-center justify-center p-4 text-center">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowBulkTagModal(false)}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="relative w-full max-w-md bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
+              >
+                <h2 className="text-lg font-semibold mb-4 text-surface-900 dark:text-white">
+                  Add Tag to {selectedTickets.length} Tickets
+                </h2>
+                <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                  Tag
+                </label>
+                <input
+                  type="text"
+                  value={bulkTagInput}
+                  onChange={(e) => setBulkTagInput(e.target.value)}
+                  className="input mb-4"
+                  placeholder="Enter tag name"
+                />
+                <div className="flex justify-end space-x-3">
+                  <button onClick={() => setShowBulkTagModal(false)} className="btn-secondary">
+                    Cancel
+                  </button>
+                  <button onClick={handleSaveBulkTag} className="btn-primary">
+                    Add Tag
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
       />
     </div>
   );
