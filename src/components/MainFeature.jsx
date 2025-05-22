@@ -22,8 +22,8 @@ import {
 // Icons
 const PlusIcon = getIcon('plus');
 const EditIcon = getIcon('edit-3');
-const TrashIcon = getIcon('trash-2');
-const AlertTriangleIcon = getIcon('alert-triangle');
+const TrashIcon = getIcon('trash2');
+const AlertCircleIcon = getIcon('alert-circle');
 const ChevronDownIcon = getIcon('chevron-down');
 const CheckCircleIcon = getIcon('check-circle');
 const XIcon = getIcon('x');
@@ -34,7 +34,7 @@ const TagIcon = getIcon('tag');
 const SearchIcon = getIcon('search');
 const DownloadIcon = getIcon('download');
 const UploadIcon = getIcon('upload');
-const GripIcon = getIcon('grip');
+const GripIcon = getIcon('grip-vertical');
 const CheckIcon = getIcon('check');
 const UsersIcon = getIcon('users');
 const LayersIcon = getIcon('layers');
@@ -113,7 +113,7 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
       
       <div className="mt-3 flex flex-wrap gap-2">
         <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${priorityStyles[ticket.priority]}`}>
-          <AlertTriangleIcon className="h-3 w-3 mr-1" />
+          <AlertCircleIcon className="h-3 w-3 mr-1" />
           {ticket.priority}
         </span>
         
@@ -1374,7 +1374,6 @@ const MainFeature = () => {
           </div>
         )}
       </AnimatePresence>
-      />
     </div>
   );
 };
