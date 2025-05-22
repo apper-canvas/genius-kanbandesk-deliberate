@@ -588,6 +588,15 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
 
 // Main component
 const MainFeature = () => {
+  // Default columns for initial setup
+  const defaultColumns = [
+    { id: '1', name: 'New', order: 0 },
+    { id: '2', name: 'In Progress', order: 1 },
+    { id: '3', name: 'Waiting for Customer', order: 2 },
+    { id: '4', name: 'Resolved', order: 3 },
+  ];
+
+const MainFeature = () => {
   // State for all board data
   const [columns, setColumns] = useState(() => {
     const savedData = localStorage.getItem('kanbandesk-data');
@@ -621,14 +630,6 @@ const MainFeature = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [newColumnName, setNewColumnName] = useState('');
   const [showAddColumn, setShowAddColumn] = useState(false);
-  
-  // Default columns for initial setup
-  const defaultColumns = [
-    { id: '1', name: 'New', order: 0 },
-    { id: '2', name: 'In Progress', order: 1 },
-    { id: '3', name: 'Waiting for Customer', order: 2 },
-    { id: '4', name: 'Resolved', order: 3 },
-  ];
   
   // Save data to localStorage whenever tickets or columns change
   useEffect(() => {
