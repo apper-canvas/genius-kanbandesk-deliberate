@@ -32,7 +32,7 @@ const userIcon = getIcon('User');
 const calendarIcon = getIcon('Calendar');
 const tagIcon = getIcon('Tag');
 const SearchIcon = getIcon('Search');
-const downloadIcon = getIcon('Download');
+const DownloadIcon = getIcon('Download');
 const UploadIcon = getIcon('Upload');
 const gripIcon = getIcon('GripVertical');
 const checkIcon = getIcon('Check');
@@ -1172,11 +1172,11 @@ onChange={handleImportCSV}
             Import CSV
           </label>
           
-          <button
+<button
             onClick={handleExportCSV}
             className="btn bg-surface-200 hover:bg-surface-300 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-800 dark:text-surface-200"
           >
-            <downloadIcon className="h-5 w-5 mr-2" />
+            <DownloadIcon className="h-5 w-5 mr-2" />
             Export CSV
           </button>
           
