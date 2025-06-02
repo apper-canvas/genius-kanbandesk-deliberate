@@ -26,7 +26,7 @@ const trashIcon = getIcon('Trash2');
 const alertCircleIcon = getIcon('AlertCircle');
 const chevronDownIcon = getIcon('ChevronDown');
 const checkCircleIcon = getIcon('CheckCircle');
-const xIcon = getIcon('X');
+const XIcon = getIcon('X');
 const settingsIcon = getIcon('Settings');
 const userIcon = getIcon('User');
 const calendarIcon = getIcon('Calendar');
@@ -239,9 +239,9 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
                 setColumnName(column.name);
                 setIsEditing(false);
               }}
-              className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 rounded-md"
+className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 rounded-md"
             >
-              <xIcon className="h-5 w-5" />
+              <XIcon className="h-5 w-5" />
             </button>
           </div>
         ) : (
@@ -426,9 +426,9 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
               <div className="absolute top-4 right-4">
                 <button 
                   onClick={onClose}
-                  className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
+className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
-                  <xIcon className="h-5 w-5" />
+                  <XIcon className="h-5 w-5" />
                 </button>
               </div>
               
@@ -568,9 +568,9 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
                             <button
                               type="button"
                               onClick={() => handleTagRemove(tag)}
-                              className="ml-1 text-surface-500 hover:text-red-500"
+className="ml-1 text-surface-500 hover:text-red-500"
                             >
-                              <xIcon className="h-3 w-3" />
+                              <XIcon className="h-3 w-3" />
                             </button>
                           </span>
                         ))}
@@ -645,9 +645,9 @@ const BulkStatusChangeModal = ({ isOpen, onClose, onSave, columns, selectedTicke
               <div className="absolute top-4 right-4">
                 <button 
                   onClick={onClose}
-                  className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
+className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
-                  <xIcon className="h-5 w-5" />
+                  <XIcon className="h-5 w-5" />
                 </button>
               </div>
               
@@ -737,8 +737,8 @@ const BulkActionToolbar = ({ selectedTickets, onClearSelection, onBulkStatusChan
         <trashIcon className="h-4 w-4 mr-1" /> Delete
       </button>
       
-      <button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
-        <xIcon className="h-4 w-4 mr-1" /> Clear
+<button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
+        <XIcon className="h-4 w-4 mr-1" /> Clear
       </button>
     </motion.div>
   );
