@@ -1457,13 +1457,13 @@ const MainFeature = () => {
                     Add Tag
                   </button>
                 </div>
+</button>
+                </div>
               </motion.div>
             </div>
           </div>
-)}
+        )}
       </AnimatePresence>
     </div>
-  );
-};
 
 export default MainFeature;
