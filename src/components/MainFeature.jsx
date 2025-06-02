@@ -395,17 +395,16 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="relative w-full max-w-lg bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
+className="relative w-full max-w-lg bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
             >
               <div className="absolute top-4 right-4">
-<button 
+                <button 
                   onClick={onClose}
                   className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
                   <XIcon className="h-5 w-5" />
                 </button>
               </div>
-              
               <h2 className="text-lg font-semibold mb-4 text-surface-900 dark:text-white">
                 {editingTicket ? 'Edit Ticket' : 'Add New Ticket'}
               </h2>
@@ -518,9 +517,9 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
                         type="text"
                         value={tagInput}
                         onChange={(e) => setTagInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
+onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
                         className="input rounded-r-none flex-grow"
-placeholder="Add tag"
+                        placeholder="Add tag"
                       />
                       <button
                         type="button"
@@ -535,18 +534,18 @@ placeholder="Add tag"
                       <div className="mt-2 flex flex-wrap gap-2">
                         {formData.tags.map((tag, idx) => (
                           <span
-                            key={idx}
+key={idx}
                             className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-surface-100 text-surface-700 dark:bg-surface-700 dark:text-surface-300"
                           >
                             {tag}
                             <button
-<button
                               type="button"
                               onClick={() => handleTagRemove(tag)}
                               className="ml-1 text-surface-500 hover:text-red-500"
                             >
                               <XIcon className="h-3 w-3" />
                             </button>
+                          </span>
                         ))}
                       </div>
                     )}
@@ -614,17 +613,16 @@ const BulkStatusChangeModal = ({ isOpen, onClose, onSave, columns, selectedTicke
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="relative w-full max-w-md bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
+className="relative w-full max-w-md bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
             >
               <div className="absolute top-4 right-4">
-<button 
+                <button 
                   onClick={onClose}
                   className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
                   <XIcon className="h-5 w-5" />
                 </button>
               </div>
-              
               <h2 className="text-lg font-semibold mb-4 text-surface-900 dark:text-white">
                 Move {selectedTickets.length} Tickets to Column
               </h2>
@@ -705,11 +703,11 @@ const BulkActionToolbar = ({ selectedTickets, onClearSelection, onBulkStatusChan
       
       <button onClick={onBulkAddTag} className="btn-secondary flex items-center text-sm">
         <tagIcon className="h-4 w-4 mr-1" /> Add Tag
-      </button>
+</button>
       
       <button onClick={onBulkDelete} className="btn-secondary flex items-center text-sm bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/50 dark:text-red-300">
         <trashIcon className="h-4 w-4 mr-1" /> Delete
-</button>
+      </button>
       
       <button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
         <XIcon className="h-4 w-4 mr-1" /> Clear
