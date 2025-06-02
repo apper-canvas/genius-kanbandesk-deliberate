@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 
 // Icons
-const plusIcon = getIcon('plus');
+const PlusIcon = getIcon('plus');
 const editIcon = getIcon('Edit3');
 const trashIcon = getIcon('Trash2');
 const alertCircleIcon = getIcon('AlertCircle');
@@ -273,11 +273,11 @@ className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:ho
       </div>
       
       {/* Add new ticket button */}
-      <button
+<button
         onClick={() => onAddTicket(column.id)}
         className="mb-3 w-full py-2 px-3 bg-white dark:bg-surface-700 border border-dashed border-surface-300 dark:border-surface-600 rounded-lg text-surface-500 dark:text-surface-400 hover:text-primary dark:hover:text-primary-light hover:border-primary dark:hover:border-primary-light transition-colors duration-200 text-sm flex items-center justify-center"
       >
-        <plusIcon className="h-4 w-4 mr-2" />
+        <PlusIcon className="h-4 w-4 mr-2" />
         Add Ticket
       </button>
       
@@ -548,12 +548,12 @@ className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:ho
                         className="input rounded-r-none flex-grow"
                         placeholder="Add tag"
                       />
-                      <button
+<button
                         type="button"
                         onClick={handleTagAdd}
                         className="px-3 bg-primary text-white rounded-r-lg hover:bg-primary-dark transition-colors"
                       >
-                        <plusIcon className="h-5 w-5" />
+                        <PlusIcon className="h-5 w-5" />
                       </button>
                     </div>
                     
@@ -1180,11 +1180,11 @@ onChange={handleImportCSV}
             Export CSV
           </button>
           
-          <button
+<button
             onClick={() => setShowAddColumn(true)}
             className="btn bg-primary hover:bg-primary-dark text-white"
           >
-            <plusIcon className="h-5 w-5 mr-2" />
+            <PlusIcon className="h-5 w-5 mr-2" />
             Add Column
           </button>
         </div>
