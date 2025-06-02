@@ -33,7 +33,7 @@ const calendarIcon = getIcon('Calendar');
 const tagIcon = getIcon('Tag');
 const SearchIcon = getIcon('Search');
 const downloadIcon = getIcon('Download');
-const uploadIcon = getIcon('Upload');
+const UploadIcon = getIcon('Upload');
 const gripIcon = getIcon('GripVertical');
 const checkIcon = getIcon('Check');
 const usersIcon = getIcon('Users');
@@ -1166,9 +1166,9 @@ className="input pl-10"
               type="file"
               accept=".csv"
               className="hidden"
-              onChange={handleImportCSV}
+onChange={handleImportCSV}
             />
-            <uploadIcon className="h-5 w-5 mr-2" />
+            <UploadIcon className="h-5 w-5 mr-2" />
             Import CSV
           </label>
           
