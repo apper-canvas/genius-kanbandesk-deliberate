@@ -10,14 +10,19 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragOverlay
+  DragOverlay,
+  useDroppable
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  useSortable
 } from '@dnd-kit/sortable';
+import {
+  CSS
+} from '@dnd-kit/utilities';
 
 // Icons
 const PlusIcon = getIcon('plus');
@@ -39,9 +44,11 @@ const checkIcon = getIcon('Check');
 const usersIcon = getIcon('Users');
 const square = getIcon('square');
 const checkSquare = getIcon('check-square');
+const layersIcon = getIcon('Layers');
 
 // Component for individual ticket
-const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelected = false, onSelect, selectable = false }) => {
+// Component for individual ticket
+const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelected = false, onSelect, selectable = false, isDragging = false, ...props }) => {
   // Priority badge styling
   const priorityStyles = {
     High: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
@@ -56,7 +63,9 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={`${
-        isOverlay ? 'shadow-lg' : ''
+        isOverlay ? 'shadow-lg z-50' : ''
+      } ${
+        isDragging ? 'opacity-50' : ''
       } bg-white dark:bg-surface-800 rounded-lg shadow-card border border-surface-200 dark:border-surface-700 p-3 mb-3 cursor-grab active:cursor-grabbing`}
       style={{ 
         borderLeft: `4px solid ${  
@@ -65,8 +74,10 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
             : ticket.priority === 'Medium' 
               ? '#f59e0b' 
               : '#10b981'
-        }`
+        }`,
+        ...props.style
       }}
+      {...props}
     >
       <div className="flex justify-between items-start">
         <h3 className="font-medium text-surface-900 dark:text-white">{ticket.title}</h3>
@@ -146,18 +157,34 @@ const TicketCard = ({ ticket, onEdit, onDelete, id, isOverlay = false, isSelecte
       )}
     </motion.div>
   );
-};
 
 // Sortable ticket component
-const SortableTicket = ({ ticket, onEdit, onDelete, id, listeners, isSelected, onSelect, selectable }) => {
+const SortableTicket = ({ ticket, onEdit, onDelete, id, isSelected, onSelect, selectable }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <div className="sortable-item" id={id} {...listeners}>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <TicketCard 
         ticket={ticket} 
         onEdit={onEdit} 
         onDelete={onDelete} 
         id={id}
-        isSelected={isSelected} onSelect={onSelect} selectable={selectable}
+        isSelected={isSelected} 
+        onSelect={onSelect} 
+        selectable={selectable}
+        isDragging={isDragging}
       />
     </div>
   );
@@ -168,45 +195,12 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
   const [isEditing, setIsEditing] = useState(false);
   const [columnName, setColumnName] = useState(column.name);
   
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-  
-  const [activeId, setActiveId] = useState(null);
-  const [activeTicket, setActiveTicket] = useState(null);
-  
-  const handleDragStart = useCallback((event) => {
-    const { active } = event;
-    setActiveId(active.id);
-    const foundTicket = tickets.find((ticket) => ticket.id === active.id);
-    setActiveTicket(foundTicket);
-  }, [tickets]);
-  
-  const handleDragEnd = useCallback((event) => {
-    const { active, over } = event;
-    
-    if (over && active.id !== over.id) {
-      const oldIndex = tickets.findIndex((ticket) => ticket.id === active.id);
-      const newIndex = tickets.findIndex((ticket) => ticket.id === over.id);
-      
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newTickets = arrayMove(tickets, oldIndex, newIndex);
-        // Here you would update your state with the new order
-        // For now, we're just console logging
-        console.log('Reordered tickets:', newTickets);
-      }
-    }
-    
-    setActiveId(null);
-    setActiveTicket(null);
-  }, [tickets]);
+  const {
+    setNodeRef,
+    isOver,
+  } = useDroppable({
+    id: column.id,
+  });
   
   const handleColumnNameSave = () => {
     if (columnName.trim() !== '') {
@@ -216,7 +210,12 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
   };
   
   return (
-    <div className="bg-surface-100 dark:bg-surface-800 rounded-lg p-3 shadow-sm w-full md:w-80 flex-shrink-0 h-full flex flex-col">
+    <div 
+      ref={setNodeRef}
+      className={`bg-surface-100 dark:bg-surface-800 rounded-lg p-3 shadow-sm w-full md:w-80 flex-shrink-0 h-full flex flex-col ${
+        isOver ? 'ring-2 ring-primary ring-opacity-50 bg-primary/5' : ''
+      }`}
+    >
       {/* Column header */}
       <div className="flex items-center justify-between mb-3">
         {isEditing ? (
@@ -239,7 +238,7 @@ const Column = ({ column, tickets, onAddTicket, onEditTicket, onDeleteTicket, on
                 setColumnName(column.name);
                 setIsEditing(false);
               }}
-className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 rounded-md"
+              className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white p-1 rounded-md"
             >
               <XIcon className="h-5 w-5" />
             </button>
@@ -273,7 +272,7 @@ className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:ho
       </div>
       
       {/* Add new ticket button */}
-<button
+      <button
         onClick={() => onAddTicket(column.id)}
         className="mb-3 w-full py-2 px-3 bg-white dark:bg-surface-700 border border-dashed border-surface-300 dark:border-surface-600 rounded-lg text-surface-500 dark:text-surface-400 hover:text-primary dark:hover:text-primary-light hover:border-primary dark:hover:border-primary-light transition-colors duration-200 text-sm flex items-center justify-center"
       >
@@ -283,45 +282,20 @@ className="text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:ho
       
       {/* Tickets container */}
       <div className="flex-grow overflow-y-auto custom-scrollbar">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={tickets.map((ticket) => ticket.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <AnimatePresence>
-              {tickets.map((ticket) => (
-                <SortableTicket
-                  key={ticket.id}
-                  id={ticket.id}
-                  ticket={ticket}
-                  onEdit={onEditTicket}
-                  onDelete={onDeleteTicket}
-                  isSelected={selectedTickets.includes(ticket.id)}
-                  onSelect={onSelectTicket}
-                  listeners={{}}
-                  selectable={true}
-                />
-              ))}
-            </AnimatePresence>
-          </SortableContext>
-          
-          <DragOverlay>
-            {activeId ? (
-              <TicketCard
-                ticket={activeTicket}
-                onEdit={onEditTicket}
-                onDelete={onDeleteTicket}
-                id={activeId}
-                isOverlay
-              />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+        <AnimatePresence>
+          {tickets.map((ticket) => (
+            <SortableTicket
+              key={ticket.id}
+              id={ticket.id}
+              ticket={ticket}
+              onEdit={onEditTicket}
+              onDelete={onDeleteTicket}
+              isSelected={selectedTickets.includes(ticket.id)}
+              onSelect={onSelectTicket}
+              selectable={true}
+            />
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -424,9 +398,9 @@ const TicketFormModal = ({ isOpen, onClose, onSave, editingTicket, columnId }) =
               className="relative w-full max-w-lg bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
             >
               <div className="absolute top-4 right-4">
-                <button 
+<button 
                   onClick={onClose}
-className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
+                  className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
                   <XIcon className="h-5 w-5" />
                 </button>
@@ -546,9 +520,9 @@ className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:ho
                         onChange={(e) => setTagInput(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
                         className="input rounded-r-none flex-grow"
-                        placeholder="Add tag"
+placeholder="Add tag"
                       />
-<button
+                      <button
                         type="button"
                         onClick={handleTagAdd}
                         className="px-3 bg-primary text-white rounded-r-lg hover:bg-primary-dark transition-colors"
@@ -566,13 +540,13 @@ className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:ho
                           >
                             {tag}
                             <button
+<button
                               type="button"
                               onClick={() => handleTagRemove(tag)}
-className="ml-1 text-surface-500 hover:text-red-500"
+                              className="ml-1 text-surface-500 hover:text-red-500"
                             >
                               <XIcon className="h-3 w-3" />
                             </button>
-                          </span>
                         ))}
                       </div>
                     )}
@@ -643,9 +617,9 @@ const BulkStatusChangeModal = ({ isOpen, onClose, onSave, columns, selectedTicke
               className="relative w-full max-w-md bg-white dark:bg-surface-800 rounded-xl shadow-lg p-6 mx-auto"
             >
               <div className="absolute top-4 right-4">
-                <button 
+<button 
                   onClick={onClose}
-className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
+                  className="text-surface-500 hover:text-surface-900 dark:text-surface-400 dark:hover:text-white"
                 >
                   <XIcon className="h-5 w-5" />
                 </button>
@@ -735,9 +709,9 @@ const BulkActionToolbar = ({ selectedTickets, onClearSelection, onBulkStatusChan
       
       <button onClick={onBulkDelete} className="btn-secondary flex items-center text-sm bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/50 dark:text-red-300">
         <trashIcon className="h-4 w-4 mr-1" /> Delete
-      </button>
+</button>
       
-<button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
+      <button onClick={onClearSelection} className="btn-secondary flex items-center text-sm">
         <XIcon className="h-4 w-4 mr-1" /> Clear
       </button>
     </motion.div>
@@ -795,6 +769,22 @@ const MainFeature = () => {
   const [bulkTagInput, setBulkTagInput] = useState('');
   const [showAddColumn, setShowAddColumn] = useState(false);
   
+  // Drag and drop state
+  const [activeId, setActiveId] = useState(null);
+  const [activeTicket, setActiveTicket] = useState(null);
+  
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  
   // Save data to localStorage whenever tickets or columns change
   useEffect(() => {
     localStorage.setItem('kanbandesk-data', JSON.stringify({ tickets, columns }));
@@ -812,6 +802,83 @@ const MainFeature = () => {
       (ticket.tags && ticket.tags.some(tag => tag.toLowerCase().includes(query)))
     );
   });
+  
+  // Get all ticket IDs for the sortable context
+  const allTicketIds = filteredTickets.map(ticket => ticket.id);
+  
+  // Drag handlers
+  const handleDragStart = useCallback((event) => {
+    const { active } = event;
+    setActiveId(active.id);
+    const foundTicket = filteredTickets.find((ticket) => ticket.id === active.id);
+    setActiveTicket(foundTicket);
+  }, [filteredTickets]);
+  
+  const handleDragOver = useCallback((event) => {
+    const { active, over } = event;
+    
+    if (!over) return;
+    
+    const activeId = active.id;
+    const overId = over.id;
+    
+    // Find the containers
+    const activeContainer = columns.find(col => 
+      filteredTickets.some(ticket => ticket.id === activeId && ticket.columnId === col.id)
+    )?.id;
+    
+    const overContainer = columns.find(col => col.id === overId)?.id || 
+      columns.find(col => 
+        filteredTickets.some(ticket => ticket.id === overId && ticket.columnId === col.id)
+      )?.id;
+    
+    if (!activeContainer || !overContainer || activeContainer === overContainer) {
+      return;
+    }
+    
+    // Move ticket to new column
+    setTickets(prev => 
+      prev.map(ticket => 
+        ticket.id === activeId 
+          ? { ...ticket, columnId: overContainer } 
+          : ticket
+      )
+    );
+  }, [columns, filteredTickets]);
+  
+  const handleDragEnd = useCallback((event) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      const activeContainer = columns.find(col => 
+        filteredTickets.some(ticket => ticket.id === active.id && ticket.columnId === col.id)
+      )?.id;
+      
+      const overContainer = columns.find(col => col.id === over.id)?.id || 
+        columns.find(col => 
+          filteredTickets.some(ticket => ticket.id === over.id && ticket.columnId === col.id)
+        )?.id;
+      
+      if (activeContainer === overContainer) {
+        // Reordering within the same column
+        const columnTickets = filteredTickets.filter(ticket => ticket.columnId === activeContainer);
+        const oldIndex = columnTickets.findIndex((ticket) => ticket.id === active.id);
+        const newIndex = columnTickets.findIndex((ticket) => ticket.id === over.id);
+        
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const reorderedTickets = arrayMove(columnTickets, oldIndex, newIndex);
+          // Update the tickets with new order
+          setTickets(prev => {
+            const otherTickets = prev.filter(ticket => ticket.columnId !== activeContainer);
+            return [...otherTickets, ...reorderedTickets];
+          });
+        }
+      }
+    }
+    
+    setActiveId(null);
+    setActiveTicket(null);
+  }, [columns, filteredTickets]);
   
   // Handlers
   const handleAddTicket = (columnId) => {
@@ -1156,7 +1223,7 @@ const MainFeature = () => {
             placeholder="Search tickets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-className="input pl-10"
+            className="input pl-10"
           />
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-surface-400" />
         </div>
@@ -1166,13 +1233,13 @@ className="input pl-10"
               type="file"
               accept=".csv"
               className="hidden"
-onChange={handleImportCSV}
+              onChange={handleImportCSV}
             />
             <UploadIcon className="h-5 w-5 mr-2" />
             Import CSV
           </label>
           
-<button
+          <button
             onClick={handleExportCSV}
             className="btn bg-surface-200 hover:bg-surface-300 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-800 dark:text-surface-200"
           >
@@ -1180,7 +1247,7 @@ onChange={handleImportCSV}
             Export CSV
           </button>
           
-<button
+          <button
             onClick={() => setShowAddColumn(true)}
             className="btn bg-primary hover:bg-primary-dark text-white"
           >
@@ -1245,24 +1312,49 @@ onChange={handleImportCSV}
         )}
       </AnimatePresence>
       
-      {/* Kanban board */}
+      {/* Kanban board with DnD */}
       <div className="flex-grow overflow-x-auto custom-scrollbar">
-        <div className="flex gap-4 h-full p-1 pb-4">
-          {columns.sort((a, b) => a.order - b.order).map((column) => (
-            <Column
-              key={column.id}
-              column={column}
-              tickets={filteredTickets.filter(ticket => ticket.columnId === column.id)}
-              onAddTicket={handleAddTicket}
-              onEditTicket={handleEditTicket}
-              onDeleteTicket={handleDeleteTicket}
-              onDeleteColumn={handleDeleteColumn}
-              onColumnEdit={handleEditColumn}
-              selectedTickets={selectedTickets}
-              onSelectTicket={handleSelectTicket}
-            />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={allTicketIds}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex gap-4 h-full p-1 pb-4">
+              {columns.sort((a, b) => a.order - b.order).map((column) => (
+                <Column
+                  key={column.id}
+                  column={column}
+                  tickets={filteredTickets.filter(ticket => ticket.columnId === column.id)}
+                  onAddTicket={handleAddTicket}
+                  onEditTicket={handleEditTicket}
+                  onDeleteTicket={handleDeleteTicket}
+                  onDeleteColumn={handleDeleteColumn}
+                  onColumnEdit={handleEditColumn}
+                  selectedTickets={selectedTickets}
+                  onSelectTicket={handleSelectTicket}
+                />
+              ))}
+            </div>
+          </SortableContext>
+          
+          <DragOverlay>
+            {activeId && activeTicket ? (
+              <TicketCard
+                ticket={activeTicket}
+                onEdit={handleEditTicket}
+                onDelete={handleDeleteTicket}
+                id={activeId}
+                isOverlay
+              />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </div>
       
       {/* Ticket modal */}
