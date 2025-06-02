@@ -31,7 +31,7 @@ const settingsIcon = getIcon('Settings');
 const userIcon = getIcon('User');
 const calendarIcon = getIcon('Calendar');
 const tagIcon = getIcon('Tag');
-const searchIcon = getIcon('Search');
+const SearchIcon = getIcon('Search');
 const downloadIcon = getIcon('Download');
 const uploadIcon = getIcon('Upload');
 const gripIcon = getIcon('GripVertical');
@@ -1156,11 +1156,10 @@ const MainFeature = () => {
             placeholder="Search tickets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input pl-10"
+className="input pl-10"
           />
-          <searchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-surface-400" />
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-surface-400" />
         </div>
-        
         <div className="flex flex-wrap gap-2">
           <label className="btn bg-surface-200 hover:bg-surface-300 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-800 dark:text-surface-200 cursor-pointer">
             <input
