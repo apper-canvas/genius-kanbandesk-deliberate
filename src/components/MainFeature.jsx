@@ -1449,15 +1449,13 @@ const MainFeature = () => {
                   className="input mb-4"
                   placeholder="Enter tag name"
                 />
-                <div className="flex justify-end space-x-3">
+<div className="flex justify-end space-x-3">
                   <button onClick={() => setShowBulkTagModal(false)} className="btn-secondary">
                     Cancel
                   </button>
                   <button onClick={handleSaveBulkTag} className="btn-primary">
                     Add Tag
                   </button>
-                </div>
-</button>
                 </div>
               </motion.div>
             </div>
