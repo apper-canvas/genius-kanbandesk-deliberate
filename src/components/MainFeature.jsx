@@ -1447,9 +1447,9 @@ const MainFeature = () => {
                   value={bulkTagInput}
                   onChange={(e) => setBulkTagInput(e.target.value)}
                   className="input mb-4"
-                  placeholder="Enter tag name"
+placeholder="Enter tag name"
                 />
-<div className="flex justify-end space-x-3">
+                <div className="flex justify-end space-x-3">
                   <button onClick={() => setShowBulkTagModal(false)} className="btn-secondary">
                     Cancel
                   </button>
@@ -1457,7 +1457,7 @@ const MainFeature = () => {
                     Add Tag
                   </button>
                 </div>
-</motion.div>
+              </motion.div>
             </div>
           </div>
         )}
