@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
-import { getIcon } from '../utils/iconUtils';
+import { getIcon } from '@/utils/iconUtils';
 import {
   DndContext,
   closestCenter,
@@ -1457,11 +1457,13 @@ const MainFeature = () => {
                     Add Tag
                   </button>
                 </div>
-              </motion.div>
+</motion.div>
             </div>
           </div>
         )}
       </AnimatePresence>
     </div>
+  );
+};
 
 export default MainFeature;
