@@ -1460,7 +1460,7 @@ placeholder="Enter tag name"
               </motion.div>
             </div>
           </div>
-        )}
+)}
       </AnimatePresence>
     </div>
   );
